@@ -9,9 +9,10 @@ export default class Banner extends Component {
         return (
             <>
                 {
-                    movie == '' ? <div className="spinner-border text-primary" role="status">
-                        <span className="sr-only">Loading...</span>
-                    </div> :
+                    movie == '' ?
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only">Loading...</span>
+                        </div> :
                         <div div className="card banner-card">
                             <img src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`} className="card-img-top banner-img" alt={movie.title} />
                             {/* <div className="card-body"> */}
