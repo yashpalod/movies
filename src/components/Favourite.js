@@ -1,35 +1,40 @@
 import React, { Component } from "react";
-import { movies } from "./getMovies";
+// import { movies } from "./getMovies";
 
 export default class Favourite extends Component {
     constructor() {
         super();
         this.state = {
             genres: [],
-            currgen: 'All Genres'
+            currgen: 'All Genres',
+            movies: []
         }
     }
-    render() {
-        const movie = movies.results;
-        console.log(movie);
+    componentDidMount() {
         let genreids = {
             28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime", 99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History",
             27: "Horror", 10402: "Music", 9648: "Mystery", 10749: "Romance", 878: "Sci-fi", 10770: "TV", 53: "Thriller", 10752: "War", 37: "Western",
         };
+        let data = JSON.parse(localStorage.getItem('movies-app') || '[]')
 
         let temp = []
-
-        movie.forEach((movieObj) => {
+        data.forEach((movieObj) => {
             if (!temp.includes(genreids[movieObj.genre_ids[0]])) {
                 temp.push(genreids[movieObj.genre_ids[0]])
             }
         })
         temp.unshift('All Genres')
-        // this.setState({
-        //     genres: [...temp]
-        // })
+        this.setState({
+            genres: [...temp],
+            movies: [...data]
+        })
+    }
 
-        console.log(temp)
+    render() {
+        let genreids = {
+            28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime", 99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History",
+            27: "Horror", 10402: "Music", 9648: "Mystery", 10749: "Romance", 878: "Sci-fi", 10770: "TV", 53: "Thriller", 10752: "War", 37: "Western",
+        };
         return (
             <div>
                 <>
@@ -38,7 +43,7 @@ export default class Favourite extends Component {
                             <div className="col-3">
                                 <ul className="list-group favourite-genres">
                                     {
-                                        temp.map((genre) => (
+                                        this.state.genres.map((genre) => (
                                             this.state.currgen == genre ?
                                                 <li className="list-group-item" style={{ background: '#3f51b5', color: 'white', fontWeight: 'bold' }}> {genre}</li> :
                                                 <li className="list-group-item" style={{ background: 'white', color: '#3f51b5' }}> {genre}</li>
@@ -63,26 +68,27 @@ export default class Favourite extends Component {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {movie.map((movieObj) => (
-                                                <tr>
-                                                    <td>
-                                                        <img
-                                                            src={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`}
-                                                            style={{ width: "5rem" }}
-                                                            alt={movieObj.title}
-                                                        />{" "}
-                                                        {movieObj.original_title}
-                                                    </td>
-                                                    <td>{genreids[movieObj.genre_ids[0]]}</td>
-                                                    <td>{movieObj.popularity}</td>
-                                                    <td>{movieObj.vote_average}</td>
-                                                    <td>
-                                                        <button type="button" className="btn btn-danger">
-                                                            Delete
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                            {
+                                                this.state.movies.map((movieObj) => (
+                                                    <tr>
+                                                        <td>
+                                                            <img
+                                                                src={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`}
+                                                                style={{ width: "5rem" }}
+                                                                alt={movieObj.title}
+                                                            />{" "}
+                                                            {movieObj.original_title}
+                                                        </td>
+                                                        <td>{genreids[movieObj.genre_ids[0]]}</td>
+                                                        <td>{movieObj.popularity}</td>
+                                                        <td>{movieObj.vote_average}</td>
+                                                        <td>
+                                                            <button type="button" className="btn btn-danger">
+                                                                Delete
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
                                         </tbody>
                                     </table>
                                 </div>
