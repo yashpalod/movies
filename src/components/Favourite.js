@@ -7,7 +7,9 @@ export default class Favourite extends Component {
         this.state = {
             genres: [],
             currgen: 'All Genres',
-            movies: []
+            movies: [],
+            currText: '',
+            limit: 5
         }
     }
     componentDidMount() {
@@ -30,11 +32,76 @@ export default class Favourite extends Component {
         })
     }
 
+    handleGenreChange = (genre) => {
+        this.setState({
+            currgen: genre
+        })
+    }
+
+    sortPopularityDesc = () => {
+        let temp = this.state.movies
+        temp.sort(function (objA, objB) {
+            return objB.popularity - objA.popularity
+        })
+        this.setState({
+            movies: [...temp]
+        })
+    }
+
+    sortPopularityAsc = () => {
+        let temp = this.state.movies
+        temp.sort(function (objA, objB) {
+            return objA.popularity - objB.popularity
+        })
+        this.setState({
+            movies: [...temp]
+        })
+    }
+
+    sortRatingDesc = () => {
+        let temp = this.state.movies
+        temp.sort(function (objA, objB) {
+            return objB.vote_average - objA.vote_average
+        })
+        this.setState({
+            movies: [...temp]
+        })
+    }
+
+    sortRatingAsc = () => {
+        let temp = this.state.movies
+        temp.sort(function (objA, objB) {
+            return objA.vote_average - objB.vote_average
+        })
+        this.setState({
+            movies: [...temp]
+        })
+    }
+
     render() {
         let genreids = {
             28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime", 99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History",
             27: "Horror", 10402: "Music", 9648: "Mystery", 10749: "Romance", 878: "Sci-fi", 10770: "TV", 53: "Thriller", 10752: "War", 37: "Western",
         };
+
+        let filterarr = [];
+
+        if (this.state.currText == '') {
+            filterarr = this.state.movies
+        } else {
+            filterarr = this.state.movies.filter((movieObj) => {
+                let title = movieObj.original_title.toLowerCase()
+                return title.includes(this.state.currText.toLowerCase())
+            })
+        }
+
+        // if (this.state.currgen == "All Genres") {
+        //     filterarr = this.state.movies
+        // }
+        if (this.state.currgen != "All Genres") {
+            filterarr = this.state.movies.filter((movieObj) => genreids[movieObj.genre_ids[0]] == this.state.currgen)
+        }
+
         return (
             <div>
                 <>
@@ -46,14 +113,14 @@ export default class Favourite extends Component {
                                         this.state.genres.map((genre) => (
                                             this.state.currgen == genre ?
                                                 <li className="list-group-item" style={{ background: '#3f51b5', color: 'white', fontWeight: 'bold' }}> {genre}</li> :
-                                                <li className="list-group-item" style={{ background: 'white', color: '#3f51b5' }}> {genre}</li>
+                                                <li className="list-group-item" style={{ background: 'white', color: '#3f51b5' }} onClick={() => this.handleGenreChange(genre)}> {genre}</li>
                                         ))
                                     }
                                 </ul>
                             </div>
                             <div className="col-9 favourite-table">
                                 <div className="row">
-                                    <input type="text" className="input-group-text col" placeholder="Search" />
+                                    <input type="text" className="input-group-text col" placeholder="Search" value={this.state.currText} onChange={(e) => this.setState({ currText: e.target.value })} />
                                     <input type="number" className="input-group-text col" placeholder="Rows Count" />
                                 </div>
                                 <div className="row">
@@ -62,14 +129,14 @@ export default class Favourite extends Component {
                                             <tr>
                                                 <th scope="col">Title</th>
                                                 <th scope="col">Genre</th>
-                                                <th scope="col">Popularity</th>
-                                                <th scope="col">Rating</th>
+                                                <th scope="col"><i className="fas fa-sort-up" onClick={this.sortPopularityDesc} /> Popularity<i className="fas fa-sort-down" onClick={this.sortPopularityAsc} /></th>
+                                                <th scope="col"><i className="fas fa-sort-up" onClick={this.sortRatingDesc} />Rating<i className="fas fa-sort-down" onClick={this.sortRatingAsc} /></th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {
-                                                this.state.movies.map((movieObj) => (
+                                                filterarr.map((movieObj) => (
                                                     <tr>
                                                         <td>
                                                             <img
